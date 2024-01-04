@@ -690,3 +690,65 @@ INSERT INTO Martı_location_history (Martı_id, date, longitude, latitude, time)
 (4, '2023-01-04 15:23:32', 41.3678, 28.7145, '15:23:32'),
 (4, '2023-01-05 12:33:11', 41.2696, 28.6008, '12:33:11'),
 (5, '2023-01-05 13:41:21', 42.2359, 29.3316, '13:41:21');
+
+INSERT INTO Train_Line (line_name, duration_time, arrival_station_name, departure_station_name)
+VALUES 
+('Ankara-İstanbul Hızlı Tren', 240, 'İstanbul', 'Ankara'),
+('İzmir-Eskişehir Ekspres', 180, 'Eskişehir', 'İzmir');
+
+INSERT INTO Train_Station (station_name, city, county)
+VALUES 
+('Ankara', 'Ankara', 'Merkez'),
+('İstanbul', 'İstanbul', 'Merkez'),
+('Eskişehir', 'Eskişehir', 'Merkez'),
+('İzmir', 'İzmir', 'Merkez');
+
+INSERT INTO Train_type (type_name, max_seats)
+VALUES 
+('Hızlı Tren', 300),
+('Ekspres', 200);
+
+INSERT INTO Train (train_id, no_of_vagons, capacity, current_location, type_name)
+VALUES 
+(1, 5, 150, 'Ankara', 'Hızlı Tren'),
+(2, 3, 120, 'İzmir', 'Ekspres');
+
+INSERT INTO Vagon (vagon_id, train_id, min_price)
+VALUES 
+(101, 1, 50.00),
+(102, 1, 50.00),
+(201, 2, 40.00);
+
+INSERT INTO Train_Line_Instance (line_name, Line_instance_id, departure_time, arrival_time, train_id)
+VALUES 
+('Ankara-İstanbul Hızlı Tren', 1, '2024-01-04 09:00:00', '2024-01-04 13:00:00', 1),
+('İzmir-Eskişehir Ekspres', 2, '2024-01-04 10:30:00', '2024-01-04 13:30:00', 2);
+
+INSERT INTO passed_stations (line_name, station_name)
+VALUES 
+('Ankara-İstanbul Hızlı Tren', 'Ankara'),
+('Ankara-İstanbul Hızlı Tren', 'Eskişehir'),
+('Ankara-İstanbul Hızlı Tren', 'İstanbul'),
+('İzmir-Eskişehir Ekspres', 'İzmir'),
+('İzmir-Eskişehir Ekspres', 'Eskişehir');
+
+INSERT INTO is_train_applicable (line_name, type_name)
+VALUES 
+('Ankara-İstanbul Hızlı Tren', 'Hızlı Tren'),
+('İzmir-Eskişehir Ekspres', 'Ekspres');
+
+INSERT INTO Economy_Vagon (vagon_id, no_of_seats, train_id)
+VALUES 
+(101, 50, 1),
+(102, 50, 1),
+(201, 40, 2);
+
+INSERT INTO Sleeper_Vagon (vagon_id, no_of_beds, train_id)
+VALUES 
+(301, 20, 1),
+(302, 30, 2);
+
+INSERT INTO Train_Voyage (line_name, Line_instance_id, voyage_id, no_of_available_seats, boarding_time, landing_time, duration_time, boarding_station_name, landing_station_name)
+VALUES 
+('Ankara-İstanbul Hızlı Tren', 1, 101, 100, '2024-01-04 08:30:00', '2024-01-04 14:30:00', 240, 'Ankara', 'İstanbul'),
+('İzmir-Eskişehir Ekspres', 2, 201, 80, '2024-01-04 10:00:00', '2024-01-04 14:00:00', 180, 'İzmir', 'Eskişehir');
