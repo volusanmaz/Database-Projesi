@@ -57,14 +57,6 @@ CREATE TABLE has_line (
                           FOREIGN KEY (terminal_name_2) REFERENCES Terminal(terminal_name)
 );
 
-CREATE TABLE passed_terminal (
-                                 line_id INT,
-                                 terminal_name VARCHAR(255),
-                                 PRIMARY KEY (line_id, terminal_name),
-                                 FOREIGN KEY (line_id) REFERENCES Line(line_id),
-                                 FOREIGN KEY (terminal_name) REFERENCES Terminal(terminal_name)
-);
-
 CREATE TABLE can_approach (
                               terminal_name VARCHAR(255),
                               type_name VARCHAR(255),
@@ -350,6 +342,74 @@ CREATE TABLE Non_Electrical_Car (
                                     engine_cylinder_volume INT,
                                     FOREIGN KEY (Company_name, license_plate) REFERENCES Car(Company_name, license_plate)
 );
+
+CREATE TABLE Bus (
+                      license_plate INT PRIMARY KEY,
+                      capacity INT
+);
+
+CREATE TABLE Bus_Line (
+                          line_name VARCHAR(255) PRIMARY KEY,
+                          duration_time INT,
+                          arrival_station_name VARCHAR(255),
+                          departure_station_name VARCHAR(255)
+);
+
+CREATE TABLE Bus_Station (
+                          station_name VARCHAR(255) PRIMARY KEY,
+                          county VARCHAR(255),
+                          city VARCHAR(255)
+);
+
+CREATE TABLE Bus_Line_Instance (
+                               line_name VARCHAR(255),
+                               line_instance_id INT PRIMARY KEY,
+                               departure_time DATETIME,
+                               arrival_time DATETIME,
+                               date DATE,
+                               bus_license_plate INT,
+                               FOREIGN KEY (line_name) REFERENCES Bus_Line(line_name),
+                               FOREIGN KEY (bus_license_plate) REFERENCES Bus(license_plate)
+);
+
+CREATE TABLE Bus_Voyage (
+                          line_name VARCHAR(255),
+                          line_instance_id INT,
+                          voyage_id INT PRIMARY KEY,
+                          landing_time DATETIME,
+                          boarding_time DATETIME,
+                          duration_time INT,
+                          no_of_available_seats INT,
+                          arrival_station_name VARCHAR(255),
+                          departure_station_name VARCHAR(255),
+                          FOREIGN KEY (line_name) REFERENCES Bus_Line(line_name),
+                          FOREIGN KEY (line_instance_id) REFERENCES Bus_Line_Instance(line_instance_id)
+);
+
+CREATE TABLE owns_bus (
+                          company_name VARCHAR(255),
+                          line_name VARCHAR(255),
+                          PRIMARY KEY (company_name, line_name),
+                          FOREIGN KEY (company_name) REFERENCES Company(company_name)
+);
+
+CREATE TABLE has_bus (
+                          company_name VARCHAR(255),
+                          line_name VARCHAR(255),
+                          PRIMARY KEY (company_name, line_name),
+                          FOREIGN KEY (company_name) REFERENCES Company(company_name),
+                          FOREIGN KEY (line_name) REFERENCES Bus_Line(line_name)
+);
+
+CREATE TABLE bus_line_passed_stations (
+                          line_name VARCHAR(255),
+                          passed_station_name VARCHAR(255),
+                          PRIMARY KEY (line_name, passed_station_name),
+                          FOREIGN KEY (line_name) REFERENCES Bus_Line(line_name)
+);
+
+
+
 CREATE TABLE Customer (
                           customer_id INT PRIMARY KEY,
                           Fname VARCHAR(255),
@@ -507,3 +567,126 @@ CREATE TABLE Car_rent_rezervation (
                                       FOREIGN KEY (dropped_branch_name) REFERENCES Branch(branch_name),
                                       FOREIGN KEY (taken_branch_name) REFERENCES Branch(branch_name)
 );
+
+
+
+INSERT INTO Line (line_id, duration_time, arrival_terminal_name, departure_terminal_name) VALUES
+(1, 120, 'Kadikoy', 'Bursa'),
+(2, 120, 'Armutlu', 'Bursa'),
+(3, 150, 'Yenikapi', 'Bursa'),
+(4, 150, 'Kabatas', 'Bursa'),
+(5, 150, 'Pendik', 'Yalova'),
+(6, 150, 'Yenikapi', 'Yalova'),
+(7, 150, 'Yalova', 'Pendik'),
+(8, 120, 'Yalova', 'Yenikapi');
+
+INSERT INTO Terminal (terminal_name, county, city) VALUES
+("Bursa", "Mudanya", "Bursa"),
+("Yalova", "Suleyman Bey", "Yalova"),
+("Kadikoy", "Kadikoy", "Istanbul"),
+("Armutlu", "Armutlu", "Istanbul"),
+("Yenikapi", "Yenikapi", "Istanbul"),
+("Kabatas", "Kabatas", "Istanbul"),
+("Pendik", "Pendik", "Istanbul");
+
+INSERT INTO Sea_Vehicle (name, type_name) VALUES
+("Murat Reis-7", "Yuksek Hizli Hafif Yolcu Gemisi"),
+("Salih Reis-4", "Yuksek Hizli Hafif Yolcu Gemisi"),
+("Burak Reis-3", "Yuksek Hizli Hafif Yolcu Gemisi"),
+("Kemal Reis-5", "Yuksek Hizli Hafif Yolcu Gemisi"),
+("Adnan Menderes", "Yuksek Hizli Hafif Yolcu Feribotu"),
+("Sadabant", "Araba Ferisi"),
+("Sahilbent", "Araba Ferisi"),
+("Suhulet", "Araba Ferisi"),
+("Fatih Sultan Mehmet", "Hafif Yolcu Feribotu"),
+("Kanuni Sultan Suleyman", "Hafif Yolcu Feribotu");
+
+INSERT INTO Sea_vehicle_type (type_name, max_seats, can_lpg_enter, can_disabled_enter) VALUES
+("Yuksek Hizli Hafif Yolcu Gemisi", 449, true, true),
+("Yuksek Hizli Hafif Yolcu Feribotu", 962, true, false),
+("Araba Ferisi", 596, false, true),
+("Hafif Yolcu Feribotu", 580, true, true);
+
+INSERT INTO Line_Instance (line_id, line_instance_id, departure_time, arrival_time, date, sea_vehicle_name) VALUES
+(1, 1, '2023-01-04 15:30:00', '2023-01-04 17:30:00', '2023-01-04', "Murat Reis-7"),
+(1, 2, '2023-01-03 15:30:00', '2023-01-03 17:30:00', '2023-01-03', "Murat Reis-7"),
+(1, 3, '2023-01-02 15:30:00', '2023-01-02 17:30:00', '2023-01-02', "Murat Reis-7"),
+(2, 4, '2023-01-02 12:30:00', '2023-01-02 14:30:00', '2023-01-02', "Adnan Menderes"),
+(2, 5, '2023-01-03 12:30:00', '2023-01-03 14:30:00', '2023-01-03', "Adnan Menderes"),
+(3, 6, '2023-01-01 17:00:00', '2023-01-01 19:30:00', '2023-01-01', "Sadabant"),
+(3, 7, '2023-01-03 17:00:00', '2023-01-03 19:30:00', '2023-01-03', "Sadabant"),
+(4, 8, '2023-01-01 19:00:00', '2023-01-01 21:30:00', '2023-01-01', "Fatih Sultan Mehmet"),
+(4, 9, '2023-01-02 19:00:00', '2023-01-02 21:30:00', '2023-01-02', "Fatih Sultan Mehmet"),
+(5, 10, '2023-01-03 20:00:00', '2023-01-03 22:30:00', '2023-01-03', "Salih Reis-4"),
+(6, 11, '2023-01-04 20:00:00', '2023-01-04 22:30:00', '2023-01-04', "Burak Reis-3"),
+(7, 12, '2023-01-03 23:00:00', '2023-01-04 01:30:00', '2023-01-03', "Suhulet"),
+(8, 13, '2023-01-02 22:30:00', '2023-01-03 00:30:00', '2023-01-02', "Sahilbent"),
+(8, 14, '2023-01-03 08:30:00', '2023-01-03 10:30:00', '2023-01-03', "Sahilbent");
+
+INSERT INTO Ferry_Voyage (line_id, line_instance_id, voyage_id, boarding_time, landing_time, duration_time, no_of_available_seats, boarding_terminal_name, landing_terminal_name) VALUES
+(1, 1, 1, '2023-01-04 15:30:00', '2023-01-04 17:30:00', 120, 148, 'Bursa', "Kadikoy"),
+(1, 2, 2, '2023-01-03 15:30:00', '2023-01-03 17:30:00', 120, 128, 'Bursa', "Kadikoy"),
+(1, 3, 3, '2023-01-02 15:30:00', '2023-01-02 17:30:00', 120, 141, 'Bursa', "Kadikoy"),
+(2, 4, 4, '2023-01-02 12:30:00', '2023-01-02 14:30:00', 120, 133, 'Bursa', "Armutlu"),
+(2, 5, 5, '2023-01-03 12:30:00', '2023-01-03 14:30:00', 120, 179, 'Bursa', "Armutlu"),
+(3, 6, 6, '2023-01-01 17:00:00', '2023-01-01 19:30:00', 150, 235, 'Bursa', "Yenikapi"),
+(3, 7, 7, '2023-01-03 17:00:00', '2023-01-03 19:30:00', 150, 332, 'Bursa', "Yenikapi"),
+(4, 8, 8, '2023-01-01 19:00:00', '2023-01-01 21:30:00', 150, 321, 'Bursa', "Kabatas"),
+(4, 9, 9, '2023-01-02 19:00:00', '2023-01-02 21:30:00', 150, 135, 'Bursa', "Kabatas"),
+(5, 10, 10, '2023-01-03 20:00:00', '2023-01-03 22:30:00', 150, 188, 'Yalova', "Pendik"),
+(6, 11, 11, '2023-01-04 20:00:00', '2023-01-04 22:30:00', 150, 92, 'Yalova', "Yenikapi"),
+(7, 12, 12, '2023-01-03 23:00:00', '2023-01-04 01:30:00', 150, 63, 'Pendik', "Yalova"),
+(8, 13, 13, '2023-01-02 22:30:00', '2023-01-03 00:30:00', 120, 143, 'Yenikapi', "Yalova"),
+(8, 14, 14, '2023-01-03 08:30:00', '2023-01-03 10:30:00', 120, 148, 'Yenikapi', "Yalova");
+
+INSERT INTO has_line (terminal_name_1, terminal_name_2) VALUES
+("Bursa", "Kadikoy"),
+("Bursa", "Armutlu"),
+("Bursa", "Yenikapi"),
+("Bursa", "Kabatas"),
+("Yalova", "Yenikapi"),
+("Yalova", "Pendik");
+
+
+INSERT INTO can_approach (terminal_name, type_name) VALUES
+("Bursa", "Yuksek Hizli Hafif Yolcu Gemisi"),
+("Bursa", "Araba Ferisi"),
+("Bursa", "Hafif Yolcu Feribotu"),
+("Kabatas", "Hafif Yolcu Feribotu"),
+("Armutlu", "Yuksek Hizli Hafif Yolcu Gemisi"),
+("Kadikoy", "Yuksek Hizli Hafif Yolcu Gemisi"),
+("Yenikapi", "Yuksek Hizli Hafif Yolcu Gemisi"),
+("Yenikapi", "Araba Ferisi"),
+("Pendik", "Yuksek Hizli Hafif Yolcu Gemisi"),
+("Pendik", "Araba Ferisi"),
+("Yalova", "Yuksek Hizli Hafif Yolcu Gemisi"),
+("Yalova", "Araba Ferisi");
+
+INSERT INTO is_ferry_applicable (line_id, type_name) VALUES
+(1, "Yuksek Hizli Hafif Yolcu Gemisi"),
+(2, "Yuksek Hizli Hafif Yolcu Feribotu"),
+(3, "Araba Ferisi"),
+(4, "Hafif Yolcu Feribotu"),
+(5, "Yuksek Hizli Hafif Yolcu Gemisi"),
+(6, "Yuksek Hizli Hafif Yolcu Gemisi"),
+(7, "Araba Ferisi"),
+(8, "Araba Ferisi");
+
+INSERT INTO Martı (martı_id, price_per_minute ,current_longitude, current_latitude, current_charge, need_driver_license, martı_type) VALUES
+(1, 6.75, 41.0082, 28.5865, 42, true, "E-mopped"),
+(2, 5.5, 41.2389, 29.1761, 42, false, "Scooter"),
+(3, 6.75, 41.5627, 28.3769, 42, true, "E-mopped"),
+(4, 5.5, 41.9253, 28.8863, 42, false, "Scooter"),
+(5, 5.5, 42.6221, 28.3562, 42, false, "Scooter");
+
+INSERT INTO Martı_location_history (Martı_id, date, longitude, latitude, time) VALUES
+(1, '2023-01-04 15:32:27', 41.5226, 29.7254, '15:32:27'),
+(1, '2023-01-06 22:18:22', 41.8263, 28.4337, '22:18:22'),
+(1, '2023-01-07 07:22:35', 42.5458, 28.1478, '07:32:35'),
+(2, '2023-01-05 16:41:35', 41.4391, 29.1933, '16:41:35'),
+(2, '2023-01-06 11:16:17', 41.7813, 28.2681, '11:16:17'),
+(3, '2023-01-02 13:22:15', 41.3985, 28.5681, '13:22:15'),
+(3, '2023-01-03 17:16:35', 42.6141, 28.1381, '17:16:35'),
+(4, '2023-01-04 15:23:32', 41.3678, 28.7145, '15:23:32'),
+(4, '2023-01-05 12:33:11', 41.2696, 28.6008, '12:33:11'),
+(5, '2023-01-05 13:41:21', 42.2359, 29.3316, '13:41:21');
